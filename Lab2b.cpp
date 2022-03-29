@@ -21,10 +21,10 @@ int main() {
     dis[0] = 0;
     std::queue<int> q;
     q.emplace(0);
-    while(!q.empty()) {
+    while (!q.empty()) {
         int now = q.front();
         q.pop();
-        for (auto &v : graph[now]) {
+        for (auto &v: graph[now]) {
             if (dis[v] > dis[now] + 1) {
                 dis[v] = dis[now] + 1;
                 if (!vis[v]) {
@@ -35,7 +35,7 @@ int main() {
         }
         vis[now] = false;
     }
-    for (auto &v : dis) {
+    for (auto &v: dis) {
         std::cout << v << " ";
     }
     std::cout << std::endl;
