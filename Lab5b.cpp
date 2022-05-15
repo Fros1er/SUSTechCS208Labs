@@ -34,8 +34,7 @@ int main() {
         auto cmp = [](const std::pair<int, int64_t> &a, const std::pair<int, int64_t> &b) {
             return a.second > b.second;
         };
-        std::priority_queue<std::pair<int, int64_t>, std::vector<std::pair<int, int64_t>>, decltype(cmp)> pq(
-                cmp);
+        std::priority_queue<std::pair<int, int64_t>, std::vector<std::pair<int, int64_t>>, decltype(cmp)> pq(cmp);
         pq.emplace(start, 0);
         dis[start] = 0;
         while (!pq.empty()) {
@@ -64,7 +63,6 @@ int main() {
         while (!q.empty()) {
             int now = q.front();
             q.pop();
-
             for (auto &v: shortestFrom[now]) {
                 result[v.second]++;
                 int next = v.first;

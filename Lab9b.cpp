@@ -83,8 +83,7 @@ int main() {
     mat = quickPower(mat, n);
     int64_t ans = 0;
     for (int i = 0; i < m; i++) {
-        ans += mat(0, i);
-        ans %= mod;
+        ans = (ans + mat(0, i)) % mod;
     }
     std::cout << ans << std::endl;
 }
