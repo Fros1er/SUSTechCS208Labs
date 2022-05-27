@@ -1,34 +1,55 @@
 #include <iostream>
 #include <vector>
-#include <forward_list>
+#include <list>
 #include <algorithm>
+#include <functional>
 
-constexpr const int mod = 1e9 + 7;
+struct edge {
+    int a, b;
+    int64_t weight;
+
+    int getChild(int index) {
+        return (a == index) ? b : a;
+    }
+};
 
 int main() {
-    int n, m;
-    std::cin >> n >> m;
-    std::vector<std::forward_list<int>> graph(n);
-    std::vector<int64_t> dp(1 << n);
-    for (int i = 0; i < m; i++) {
-        int u, v;
-        std::cin >> u >> v;
-        graph[u - 1].emplace_front(v - 1);
+    int n;
+    std::cin >> n;
+    std::vector<std::list<int>> graph(n);
+    std::vector<edge> edges(n - 1);
+    std::vector<std::pair<int64_t, int64_t>> dp(n);
+    for (int i = 0; i < n - 1; i++) {
+        int a, b, w;
+        std::cin >> a >> b >> w;
+        a--;
+        b--;
+        edges[i] = {a, b, w};
+        graph[a].emplace_back(i);
+        graph[b].emplace_back(i);
     }
-    dp[0] = 1;
-    for (int i = 0; i < n; i++) {
-        dp[1 << i] = 1;
-    }
-    for (int i = 1; i < dp.size() - 1; i++) {
-        for (int j = 0; j < n; j++) {
-            if (!((i >> j) & 1)) {
-                size_t num = std::count_if(graph[j].begin(), graph[j].end(), [&i](int &v){
-                    return (i >> v) & 1;
-                });
-                int t = i + (1 << j);
-                dp[t] = (dp[t] + dp[i] * (1 << num)) % mod;
+    std::function<int64_t(int, int)> cal = [&cal, &graph, &n, &dp, &edges](int index, int fa) {
+        if (graph[index].size() == 1 && index != n - 1) {
+            dp[index] = {0, 0};
+            return static_cast<int64_t>(0);
+        }
+        for (auto &v: graph[index]) {
+            int ch = edges[v].getChild(index);
+            if (ch != fa) {
+                dp[ch].second = cal(ch, index);
+                dp[index].first += dp[ch].second;
             }
         }
-    }
-    std::cout << dp.back() << std::endl;
+        int64_t max = dp[index].first;
+        for (auto &v: graph[index]) {
+            int ch = edges[v].getChild(index);
+            if (ch != fa) {
+                max = std::max(max, edges[v].weight + dp[index].first + dp[ch].first - dp[ch].second);
+            }
+        }
+        dp[index].second = max;
+        return max;
+    };
+
+    std::cout << cal(n - 1, -1) << std::endl;
 }
